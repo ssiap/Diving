@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Mon GPS Marine - Golfe Juan</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { height: 100vh; width: 100vw; }
+        .info-box {
+            position: absolute; bottom: 20px; left: 10px; z-index: 1000;
+            background: white; padding: 10px; border-radius: 8px; font-family: sans-serif;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+<div class="info-box" id="gps-status">Recherche du signal GPS...</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // 1. Initialisation de la carte sur le Golfe Juan
+    const map = L.map('map').setView([43.565, 7.075], 14);
+
+    // 2. Ajout d'une couche de carte (OpenStreetMap pour le test)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    // 3. Gestion du GPS en temps réel
+    const marker = L.circleMarker([0, 0], {
+        radius: 8, color: 'white', fillColor: '#007bff', fillOpacity: 1, weight: 2
+    }).addTo(map);
+
+    function onLocationFound(e) {
+        const radius = e.accuracy / 2;
+        marker.setLatLng(e.latlng);
+        document.getElementById('gps-status').innerHTML = `Position captée (précision: ${Math.round(e.accuracy)}m)`;
+    }
+
+    function onLocationError(e) {
+        document.getElementById('gps-status').innerHTML = "Erreur GPS : " + e.message;
+    }
+
+    map.on('locationfound', onLocationFound);
+    map.on('locationerror', onLocationError);
+
+    // Activer le suivi en direct
+    map.locate({setView: true, maxZoom: 16, watch: true, enableHighAccuracy: true});
+</script>
+</body>
+</html>
