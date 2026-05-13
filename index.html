@@ -22,26 +22,27 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    // 1. Initialisation de la carte sur le Golfe Juan
+    // 1. Initialisation de la carte centrée sur le Golfe Juan
     const map = L.map('map').setView([43.565, 7.075], 14);
 
-    // 2. Ajout d'une couche de carte (OpenStreetMap pour le test)
+    // 2. Ajout de la carte de base (OpenStreetMap)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    // 3. Gestion du GPS en temps réel
+    // 3. Création du marqueur bleu pour ta position
     const marker = L.circleMarker([0, 0], {
         radius: 8, color: 'white', fillColor: '#007bff', fillOpacity: 1, weight: 2
     }).addTo(map);
 
+    // 4. Fonction quand le GPS trouve ta position
     function onLocationFound(e) {
-        const radius = e.accuracy / 2;
-        marker.setLatLng(e.latlng);
+        marker.setLatLng(e.latlng); // Déplace le point bleu
         document.getElementById('gps-status').innerHTML = `Position captée (précision: ${Math.round(e.accuracy)}m)`;
     }
 
+    // 5. Fonction en cas d'erreur du GPS
     function onLocationError(e) {
         document.getElementById('gps-status').innerHTML = "Erreur GPS : " + e.message;
     }
@@ -49,8 +50,8 @@
     map.on('locationfound', onLocationFound);
     map.on('locationerror', onLocationError);
 
-    // Activer le suivi en direct
-    map.locate({setView: true, maxZoom: 16, watch: true, enableHighAccuracy: true});
+    // 6. Activer le suivi en direct (SANS bloquer le déplacement de la carte)
+    map.locate({watch: true, enableHighAccuracy: true});
 </script>
 </body>
 </html>
